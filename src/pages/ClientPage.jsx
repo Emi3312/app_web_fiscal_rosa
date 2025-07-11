@@ -14,7 +14,6 @@ function ClientPage() {
       try {
         const clientRes = await fetch(`${API_URL}/api/client-data/${slug}`);
         if (!clientRes.ok) {
-          // Si el status es 404, es un error específico. Para otros, un error genérico.
           if (clientRes.status === 404) {
             throw new Error('El enlace del cliente no es válido o no se encontró.');
           }
@@ -34,11 +33,20 @@ function ClientPage() {
   const handleCopiar = () => {
     if (!data) return;
     const { datosFijos, cliente } = data;
+    
+    // --- ¡CAMBIO IMPORTANTE AQUÍ! ---
+    // Actualizamos el texto a copiar para que coincida con el nuevo formato.
     const textoParaCopiar = `DATOS FISCALES
 ---------------------------------
 Nombre/Razón Social: ${datosFijos.nombre}
 RFC: ${datosFijos.rfc}
-Domicilio: ${datosFijos.calle} No. Ext. ${datosFijos.num_ext}, Col. ${datosFijos.colonia}, ${datosFijos.municipio}, ${datosFijos.estado}, C.P. ${datosFijos.cp}
+Domicilio Fiscal:
+  Calle: ${datosFijos.calle}
+  Número Exterior: ${datosFijos.num_ext}
+  Colonia: ${datosFijos.colonia}
+  Municipio / Localidad: ${datosFijos.municipio}
+  Estado: ${datosFijos.estado}
+  Código Postal (C.P.): ${datosFijos.cp}
 Régimen Fiscal: ${datosFijos.regimen_fiscal}
 Correo Electrónico: ${datosFijos.correo_electronico}
 ---------------------------------
@@ -51,32 +59,37 @@ FORMA DE PAGO: ${cliente.forma_pago_clave} - ${cliente.forma_pago_descripcion}`;
     });
   };
 
-  // --- LÓGICA DE RENDERIZADO CORREGIDA ---
-  
-  // 1. Mostrar estado de carga
   if (loading) {
     return <h1>Cargando información fiscal...</h1>;
   }
-
-  // 2. Mostrar estado de error
   if (error) {
     return <div className="error-message">{error}<br/><Link to="/login" style={{color: 'var(--primary-color)'}}>Volver al inicio</Link></div>;
   }
-
-  // 3. ¡LA GUARDA DE SEGURIDAD! No renderizar nada si los datos aún no están listos.
-  // Esto previene el error fatal.
   if (!data) {
-    return null; // O un mensaje de "No hay datos disponibles". `null` es más seguro.
+    return null; 
   }
 
-  // 4. Si todo está bien, renderizar el componente.
   return (
     <div className="card">
       <h1>Datos Fiscales para: {data.cliente.name}</h1>
       <div className="data-section">
         <p><strong>Nombre/Razón Social:</strong> {data.datosFijos.nombre}</p>
         <p><strong>RFC:</strong> {data.datosFijos.rfc}</p>
-        <p><strong>Domicilio Fiscal:</strong> {`${data.datosFijos.calle} No. Ext. ${data.datosFijos.num_ext}, Col. ${data.datosFijos.colonia}, ${data.datosFijos.municipio}, ${data.datosFijos.estado}, C.P. ${data.datosFijos.cp}`}</p>
+        
+        {/* --- ¡CAMBIO IMPORTANTE AQUÍ! --- */}
+        {/* Reemplazamos el párrafo único por un bloque estructurado. */}
+        <div className="address-block">
+          <p><strong>Domicilio Fiscal:</strong></p>
+          <div className="address-details">
+            <p><strong>Calle:</strong> {data.datosFijos.calle}</p>
+            <p><strong>Número Exterior:</strong> {data.datosFijos.num_ext}</p>
+            <p><strong>Colonia:</strong> {data.datosFijos.colonia}</p>
+            <p><strong>Municipio / Localidad:</strong> {data.datosFijos.municipio}</p>
+            <p><strong>Estado:</strong> {data.datosFijos.estado}</p>
+            <p><strong>Código Postal (C.P.):</strong> {data.datosFijos.cp}</p>
+          </div>
+        </div>
+        
         <p><strong>Régimen Fiscal:</strong> {data.datosFijos.regimen_fiscal}</p>
         <p><strong>Correo Electrónico:</strong> {data.datosFijos.correo_electronico}</p>
         <hr style={{ borderColor: 'var(--border-color)', margin: '1.5rem 0' }}/>

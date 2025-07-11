@@ -276,6 +276,24 @@ button.btn-danger:hover:not(:disabled) {
   word-break: break-all;
 }
 
+/* --- Estilos para el bloque de dirección estructurado --- */
+
+.address-block {
+  margin: 0.8rem 0; /* Espaciado igual que los otros párrafos */
+}
+
+.address-details {
+  padding-left: 1.5em; /* Indentación para los detalles de la dirección */
+  border-left: 2px solid var(--border-color); /* Una línea visual para agrupar */
+  margin-top: 0.5em;
+}
+
+.address-details p {
+  margin: 0.4rem 0; /* Espaciado más compacto entre las líneas de la dirección */
+}
+
+
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
